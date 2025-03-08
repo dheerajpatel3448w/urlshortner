@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>URL Shortener</h1>
+        <form action="" id="shortform">
+            <h3>Enter URL :</h3>
+            <input type="url" name="input">
+            
+            <h3>Custom Short URL :</h3>
+            <input type="text" name="inputop">
+            
+            <button>Short</button>
+        </form>
+        <div>
+        <ul class="shorted">
+
+        </ul>
+    </div>
+    </div>
+    
+</body>
+<script>
+    let shortUrlDisplay = document.querySelector('.shorted');
+    let shortUrlButton = document.querySelector('button');
+  const fetchsortedurl =async()=>{
+    let res = await fetch("/links");
+    let data = await res.json();
+    console.log(data);
+    let a = Object.entries(data)
+    a.forEach((dtata)=>{
+let li = document.createElement("li");
+li.innerHTML =`
+<a href="${dtata[0]}">${window.location.origin}/${dtata[0]}</a>
+
+`
+shortUrlDisplay.appendChild(li);
+    })
+
+    
+
+  }
+  
+    document.querySelector("#shortform").addEventListener("submit", async(e)=>{
+        e.preventDefault();
+        let b = new FormData(e.target);
+        let url = b.get('input');
+        let shortUrl = b.get('inputop');
+        
+        console.log(url,shortUrl,"ok");
+     try{
+     let response = await fetch("/shorten",{
+         method: "POST",
+         headers: {
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({url,shortUrl})
+     })
+     if(response.ok){
+        fetchsortedurl();
+     }
+
+     }
+     catch(err){
+        alert("Failed to connect to server!");
+        return;
+     }
+   
+      
+
+
+    })
+    fetchsortedurl();
+ 
+</script>
+</html>
